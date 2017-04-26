@@ -32,6 +32,8 @@ public class DragItem {
     protected static final int ANIMATION_DURATION = 250;
     private View mDragView;
 
+    private float mStartOffsetX;
+    private float mStartOffsetY;
     private float mOffsetX;
     private float mOffsetY;
     private float mPosX;
@@ -112,9 +114,9 @@ public class DragItem {
         onMeasureDragView(startFromView, mDragView);
         onStartDragAnimation(mDragView);
 
-        float startX = startFromView.getX() - (mDragView.getMeasuredWidth() - startFromView.getMeasuredWidth()) / 2 + mDragView
+        float startX = startFromView.getX() + mStartOffsetX - (mDragView.getMeasuredWidth() - startFromView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
-        float startY = startFromView.getY() - (mDragView.getMeasuredHeight() - startFromView.getMeasuredHeight()) / 2 + mDragView
+        float startY = startFromView.getY() + mStartOffsetY - (mDragView.getMeasuredHeight() - startFromView.getMeasuredHeight()) / 2 + mDragView
                 .getMeasuredHeight() / 2;
 
         if (mSnapToTouch) {
@@ -140,9 +142,9 @@ public class DragItem {
     void endDrag(View endToView, AnimatorListenerAdapter listener) {
         onEndDragAnimation(mDragView);
 
-        float endX = endToView.getX() - (mDragView.getMeasuredWidth() - endToView.getMeasuredWidth()) / 2 + mDragView
+        float endX = endToView.getX() + mStartOffsetX - (mDragView.getMeasuredWidth() - endToView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
-        float endY = endToView.getY() - (mDragView.getMeasuredHeight() - endToView.getMeasuredHeight()) / 2 + mDragView
+        float endY = endToView.getY() + mStartOffsetY - (mDragView.getMeasuredHeight() - endToView.getMeasuredHeight()) / 2 + mDragView
                 .getMeasuredHeight() / 2;
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("X", mPosX, endX);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("Y", mPosY, endY);
@@ -173,6 +175,11 @@ public class DragItem {
     void setY(float y) {
         mPosY = y;
         updatePosition();
+    }
+
+    void setStartOffset(float xStartOffset, float yStartOffset) {
+        mStartOffsetX = xStartOffset;
+        mStartOffsetY = yStartOffset;
     }
 
     float getX() {

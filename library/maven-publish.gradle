@@ -40,6 +40,9 @@ def getRepositoryPassword() {
 }
 
 afterEvaluate { project ->
+    if (!hasProperty('NEXUS_PASSWORD') && getRepositoryPassword() == "")
+        return;
+
     uploadArchives {
         repositories {
             mavenDeployer {
@@ -88,7 +91,7 @@ afterEvaluate { project ->
     }
 
     signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") && hasProperty('NEXUS_PASSWORD') }
         sign configurations.archives
     }
 
