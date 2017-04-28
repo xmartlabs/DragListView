@@ -16,24 +16,29 @@
 
 package com.woxthebox.draglistview;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.Interpolator;
+import android.view.animation.Transformation;
 
 import java.util.Collections;
 import java.util.List;
 
 public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> extends RecyclerView.Adapter<VH> {
-
-    interface DragStartCallback {
-        boolean startDrag(View itemView, long itemId);
-
-        boolean isDragging();
-    }
+    private static final int ITEM_ANIMATION_DURATION = 368;
+    private static final float ITEM_INTERPOLATOR_ACCELERATION = 1.6f;
 
     private DragStartCallback mDragStartCallback;
     private long mDragItemId = RecyclerView.NO_ID;
     private long mDropTargetId = RecyclerView.NO_ID;
+    private RecyclerView recyclerView;
+    @Nullable
+    private Animation itemAnimation;
     protected List<T> mItemList;
 
     public void setItemList(List<T> itemList) {
@@ -55,10 +60,55 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
         return RecyclerView.NO_POSITION;
     }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    public void animateHeight(final View view, final int height) {
+        final int initialHeight = view.getMeasuredHeight();
+        Interpolator interpolator = new AccelerateInterpolator(ITEM_INTERPOLATOR_ACCELERATION);
+
+        view.getLayoutParams().height = initialHeight;
+        view.requestLayout();
+
+        itemAnimation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (!hasEnded()) {
+                    view.getLayoutParams().height = initialHeight - (int) (height * interpolatedTime);
+                    view.requestLayout();
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+
+            @Override
+            public boolean hasEnded() {
+                boolean hasEnded = super.hasEnded();
+                if (hasEnded) {
+                    view.getLayoutParams().height = RecyclerView.LayoutParams.WRAP_CONTENT;
+                    view.requestLayout();
+                }
+                return hasEnded;
+            }
+        };
+
+        itemAnimation.setDuration(ITEM_ANIMATION_DURATION);
+        itemAnimation.setInterpolator(interpolator);
+        view.startAnimation(itemAnimation);
+    }
+
     public Object removeItem(int pos) {
         if (mItemList != null && mItemList.size() > pos && pos >= 0) {
+            View viewToRemove = recyclerView.findViewHolderForAdapterPosition(pos).itemView;
             Object item = mItemList.remove(pos);
             notifyItemRemoved(pos);
+            animateHeight((View) viewToRemove.getParent(), viewToRemove.getMeasuredHeight());
             return item;
         }
         return null;
@@ -66,6 +116,10 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
 
     public void addItem(int pos, T item) {
         if (mItemList != null && mItemList.size() >= pos) {
+            if (itemAnimation != null) {
+                itemAnimation.cancel();
+                itemAnimation = null;
+            }
             mItemList.add(pos, item);
             notifyItemInserted(pos);
         }
@@ -216,5 +270,11 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
         public boolean onItemTouch(View view, MotionEvent event) {
             return false;
         }
+    }
+
+    interface DragStartCallback {
+        boolean startDrag(View itemView, long itemId);
+
+        boolean isDragging();
     }
 }
