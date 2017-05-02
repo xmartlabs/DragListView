@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -276,7 +277,8 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     }
 
     private void updateDragPositionAndScroll() {
-        View view = findChildView(mDragItem.getX(), mDragItem.getY());
+        Pair<Integer, Integer> offset = getStartOffset();
+        View view = findChildView(mDragItem.getX() - offset.first, mDragItem.getY() - offset.second);
         int newPos = getChildLayoutPosition(view);
         if (newPos == NO_POSITION || view == null) {
             return;
@@ -381,12 +383,18 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     }
 
     private void setStartOffset() {
+        Pair<Integer, Integer> startOffset = getStartOffset();
+
+        mDragItem.setStartOffset(startOffset.first, startOffset.second);
+    }
+
+    private Pair<Integer, Integer> getStartOffset() {
         @Size(2) int[] outerPosition = new int[2];
         mOuterParent.getLocationInWindow(outerPosition);
         @Size(2) int[] innerPosition = new int[2];
         getLocationInWindow(innerPosition);
 
-        mDragItem.setStartOffset(innerPosition[0] - outerPosition[0], innerPosition[1] - outerPosition[1]);
+        return new Pair<>(innerPosition[0] - outerPosition[0], innerPosition[1] - outerPosition[1]);
     }
 
     void onDragging(float x, float y) {
