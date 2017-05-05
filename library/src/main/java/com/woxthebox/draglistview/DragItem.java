@@ -77,6 +77,9 @@ public class DragItem {
     public void onStartDragAnimation(View dragView) {
     }
 
+    public void willEndDragAnimation(View dragView) {
+    }
+
     public void onEndDragAnimation(View dragView) {
     }
 
@@ -140,7 +143,7 @@ public class DragItem {
     }
 
     void endDrag(View endToView, AnimatorListenerAdapter listener) {
-        onEndDragAnimation(mDragView);
+        willEndDragAnimation(mDragView);
 
         float endX = endToView.getX() + mStartOffsetX - (mDragView.getMeasuredWidth() - endToView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
@@ -188,6 +191,10 @@ public class DragItem {
 
     float getY() {
         return mPosY;
+    }
+
+    float getTouchX() {
+        return mPosX - mPosTouchDx;
     }
 
     void setPosition(float touchX, float touchY) {

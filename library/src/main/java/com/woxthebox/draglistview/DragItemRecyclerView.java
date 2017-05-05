@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
@@ -51,7 +52,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         DRAG_STARTED, DRAGGING, DRAG_ENDED
     }
 
-    private View mOuterParent;
+    private BoardColumnContainerLayout mOuterParent;
     private AutoScroller mAutoScroller;
     private DragItemListener mListener;
     private DragItemCallback mDragCallback;
@@ -184,18 +185,18 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     }
 
     boolean isDragging() {
-        return mDragState != DragState.DRAG_ENDED;
+        return mDragState != DragState.DRAG_ENDED || mOuterParent.isDragging();
     }
 
     long getDragItemId() {
         return mDragItemId;
     }
 
-    void setOuterParent(@NonNull View outerParent) {
+    void setOuterParent(@NonNull BoardColumnContainerLayout outerParent) {
         mOuterParent = outerParent;
     }
 
-    View getOuterParent() {
+    BoardColumnContainerLayout getOuterParent() {
         return mOuterParent;
     }
 
@@ -399,6 +400,9 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
 
     void onDragging(float x, float y) {
         if (mDragState == DragState.DRAG_ENDED) {
+            if (mOuterParent.isDragging()) {
+                mOuterParent.onDragging(x, y);
+            }
             return;
         }
 
@@ -419,6 +423,9 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     void onDragEnded() {
         // Need check because sometimes the framework calls drag end twice in a row
         if (mDragState == DragState.DRAG_ENDED) {
+            if (mOuterParent.isDragging()) {
+                mOuterParent.onDragEnded();
+            }
             return;
         }
 
@@ -446,6 +453,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             holder.itemView.setAlpha(1);
+                            mDragItem.onEndDragAnimation(holder.itemView);
                             onDragItemAnimationEnd();
                         }
                     });
