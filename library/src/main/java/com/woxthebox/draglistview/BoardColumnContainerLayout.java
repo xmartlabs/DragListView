@@ -32,7 +32,7 @@ public class BoardColumnContainerLayout extends LinearLayout {
             @Override
             public void onLongPress(MotionEvent e) {
                 if (mDragItem != null && !mIsDragging
-                        && isPressingOnView(e.getX() + mScrollOffsetX, e.getY() + mScrollOffsetY)) {
+                        && isPressingOnActiveArea(getEventXPosition(e), getEventYPosition(e))) {
                     mIsDragging = true;
                     mStartDraggingDiffCalculated = false;
                     mBoardColumnDragListener.dragStarted();
@@ -41,12 +41,31 @@ public class BoardColumnContainerLayout extends LinearLayout {
                 super.onLongPress(e);
             }
 
-            private boolean isPressingOnView(float xTouch, float yTouch) {
-                return xTouch >= getX() && yTouch >= getY()
-                        && xTouch < getX() + getWidth() && yTouch < getY() + getHeight();
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                if (!mIsDragging && isPressingOnActiveArea(getEventXPosition(e), getEventYPosition(e))) {
+                    onActiveAreaClick(e);
+                }
+                return super.onSingleTapUp(e);
+            }
+
+            private float getEventXPosition(MotionEvent e) {
+                return e.getX() + mScrollOffsetX;
+            }
+
+            private float getEventYPosition(MotionEvent e) {
+                return e.getY() + mScrollOffsetY;
             }
         });
         mGestureDetector.setIsLongpressEnabled(true);
+    }
+
+    protected boolean isPressingOnActiveArea(float xTouch, float yTouch) {
+        return xTouch >= getX() && yTouch >= getY()
+                && xTouch < getX() + getWidth() && yTouch < getY() + getHeight();
+    }
+
+    protected void onActiveAreaClick(MotionEvent e) {
     }
 
     public void setBoardColumnDragListener(BoardColumnDragListener dragItemListener) {
