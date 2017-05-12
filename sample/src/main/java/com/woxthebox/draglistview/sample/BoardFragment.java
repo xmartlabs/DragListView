@@ -139,11 +139,18 @@ public class BoardFragment extends Fragment {
             case R.id.action_clear_board:
                 mBoardView.clearBoard();
                 return true;
+            case R.id.add_column:
+                addColumnList(true);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void addColumnList() {
+        addColumnList(false);
+    }
+
+    private void addColumnList(boolean animated) {
         final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
         int addItems = 5;
         for (int i = 0; i < addItems; i++) {
@@ -153,7 +160,11 @@ public class BoardFragment extends Fragment {
 
         final ItemAdapter listAdapter = new ItemAdapter(mItemArray, R.layout.column_item, R.id.item_layout, true);
 
-        mBoardView.addColumnListWithContainer(listAdapter, new BoardColumnContainer(getContext()), false);
+        if (animated) {
+            mBoardView.addColumnListWithContainer(listAdapter, new BoardColumnContainer(getContext()), false, mColumns - 1, null);
+        } else {
+            mBoardView.addColumnListWithContainer(listAdapter, new BoardColumnContainer(getContext()), false);
+        }
         mColumns++;
     }
 
