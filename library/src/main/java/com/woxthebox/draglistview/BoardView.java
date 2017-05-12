@@ -308,7 +308,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         int newColumn = getColumnOfList(currentList);
 
         if (isDraggingColumn()) {
-            if (!mCanSwapColumn) {
+            if (!mCanSwapColumn || !currentList.getOuterParent().canDrag()) {
                 return;
             }
             mTouchEnabled = false;
@@ -596,6 +596,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     public boolean isDragEnabled() {
         return mDragEnabled;
+    }
+
+    public int getNumberOfColumns() {
+        return mLists.size();
     }
 
     public void setDragEnabled(boolean enabled) {

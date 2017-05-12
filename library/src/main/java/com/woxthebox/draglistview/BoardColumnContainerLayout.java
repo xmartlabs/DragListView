@@ -19,6 +19,7 @@ public class BoardColumnContainerLayout extends LinearLayout {
     private float mScrollOffsetY = 0;
     private float mStartDraggingDiff = 0;
     private boolean mStartDraggingDiffCalculated = false;
+    private boolean mCanDrag = true;
 
     public BoardColumnContainerLayout(Context context) {
         super(context);
@@ -81,12 +82,20 @@ public class BoardColumnContainerLayout extends LinearLayout {
         mScrollOffsetY = y;
     }
 
+    public void setCanDrag(boolean canDrag) {
+        mCanDrag = canDrag;
+    }
+
     public boolean isDragging() {
         return mIsDragging;
     }
 
     public GestureDetector getLongPressGestureDetector() {
         return mGestureDetector;
+    }
+
+    public boolean canDrag() {
+        return mCanDrag;
     }
 
     public void onStartDrag(float x, float y) {
