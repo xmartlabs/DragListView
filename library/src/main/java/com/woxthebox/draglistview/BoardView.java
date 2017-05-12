@@ -411,6 +411,21 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         return column;
     }
 
+    public int getColumnOfListOuterParent(BoardColumnContainerLayout layout) {
+        int column = 0;
+        for (int i = 0; i < mLists.size(); i++) {
+            DragItemRecyclerView tmpList = mLists.get(i);
+            if (tmpList.getOuterParent() == layout) {
+                column = i;
+            }
+        }
+        return column;
+    }
+
+    public int getNumberOfRows(int column) {
+        return mLists.get(column).getAdapter().getItemCount();
+    }
+
     private int getCurrentColumn(float posX) {
         for (int i = 0; i < mLists.size(); i++) {
             DragItemRecyclerView list = mLists.get(i);
@@ -596,10 +611,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     public boolean isDragEnabled() {
         return mDragEnabled;
-    }
-
-    public int getNumberOfColumns() {
-        return mLists.size();
     }
 
     public void setDragEnabled(boolean enabled) {
