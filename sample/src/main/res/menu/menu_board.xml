@@ -37,4 +37,8 @@
         android:id="@+id/action_clear_board"
         android:title="Clear board"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/add_column"
+        android:title="Add Column"
+        app:showAsAction="never"/>
 </menu>
