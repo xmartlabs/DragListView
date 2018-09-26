@@ -764,11 +764,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                                                            final int position,
                                                            @Nullable final ItemAnimationListener animationListener,
                                                            final boolean animate) {
-        if (animate) {
-            mMoveColumnsAnimationDuration = 0;
-        } else {
-            mMoveColumnsAnimationDuration = MOVE_COLUMNS_ANIMATION_DURATION;
-        }
+        mMoveColumnsAnimationDuration = animate ? MOVE_COLUMNS_ANIMATION_DURATION : 0;
 
         final DragItemRecyclerView recyclerView = setupRecyclerView(adapter, hasFixedItemSize);
 
