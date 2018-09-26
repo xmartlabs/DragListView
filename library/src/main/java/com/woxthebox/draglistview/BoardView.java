@@ -801,7 +801,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             List<BoardColumnContainerLayout> columns = new ArrayList<>();
             for (int pos = position + 1; pos < mLists.size(); pos++) {
                 BoardColumnContainerLayout column = mLists.get(pos).getOuterParent();
-                moveViewByX(column, 0);
+                //moveViewByX(column, 0);
                 columns.add(column);
             }
 
@@ -814,7 +814,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                 @Override
                 public void run() {
                     mColumnLayout.addView(containerLayout, position);
-                    /*containerLayout.animate()
+                    containerLayout.animate()
                             .alpha(ALPHA_OPAQUE)
                             .scaleX(VIEW_NORMAL_SCALE)
                             .scaleY(VIEW_NORMAL_SCALE)
@@ -829,7 +829,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                                     mTouchEnabled = true;
                                 }
                             })
-                            .start();*/
+                            .start();
                 }
             });
         }
