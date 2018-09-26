@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -32,11 +31,8 @@ import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -65,7 +61,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     private static final int SCROLL_ANIMATION_DURATION = 325;
     private static final int SWAP_ANIMATION_DURATION = 700;
-    private static final int MOVE_COLUMNS_ANIMATION_DURATION = 300;
     private static final float ALPHA_OPAQUE = 1.0f;
     private static final float ALPHA_INVISIBLE = 0.01f;
     private static final float VIEW_SHRINK_SCALE = 0.8f;
@@ -90,6 +85,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private float mTouchY;
     private int mColumnWidth;
     private int mDragStartColumn;
+    private int mMoveColumnsAnimationDuration = 300;
     private boolean mIsDraggingColumn = false;
     private int mDragStartRow;
     private boolean mHasLaidOut;
@@ -709,7 +705,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         recyclerView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(hasFixedItemSize);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        //recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setDragItemListener(new DragItemRecyclerView.DragItemListener() {
             @Override
             public void onDragStarted(int itemPosition, float x, float y) {
@@ -754,16 +750,22 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
     public DragItemRecyclerView addColumnListWithContainer(final DragItemAdapter adapter,
-                                              final BoardColumnContainerLayout containerLayout,
-                                              boolean hasFixedItemSize) {
-        return addColumnListWithContainer(adapter, containerLayout, hasFixedItemSize, mLists.size(), null);
+                                                           final BoardColumnContainerLayout containerLayout,
+                                                           boolean hasFixedItemSize,
+                                                           boolean animate) {
+        return addColumnListWithContainer(adapter, containerLayout, hasFixedItemSize, mLists.size(), null, animate);
     }
 
     public DragItemRecyclerView addColumnListWithContainer(final DragItemAdapter adapter,
                                                            final BoardColumnContainerLayout containerLayout,
                                                            final boolean hasFixedItemSize,
                                                            final int position,
-                                                           @Nullable final ItemAnimationListener animationListener) {
+                                                           @Nullable final ItemAnimationListener animationListener,
+                                                           final boolean animate) {
+        if (!animate) {
+            mMoveColumnsAnimationDuration = 0;
+        }
+
         final DragItemRecyclerView recyclerView = setupRecyclerView(adapter, hasFixedItemSize);
 
         containerLayout.setLayoutParams(new LayoutParams(mColumnWidth, LayoutParams.MATCH_PARENT));
@@ -801,7 +803,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             List<BoardColumnContainerLayout> columns = new ArrayList<>();
             for (int pos = position + 1; pos < mLists.size(); pos++) {
                 BoardColumnContainerLayout column = mLists.get(pos).getOuterParent();
-                //moveViewByX(column, 0);
+                moveViewByX(column, 0);
                 columns.add(column);
             }
 
@@ -818,7 +820,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                             .alpha(ALPHA_OPAQUE)
                             .scaleX(VIEW_NORMAL_SCALE)
                             .scaleY(VIEW_NORMAL_SCALE)
-                            .setDuration(MOVE_COLUMNS_ANIMATION_DURATION)
+                            .setDuration(mMoveColumnsAnimationDuration)
                             .setInterpolator(new DecelerateInterpolator())
                             .withEndAction(new Runnable() {
                                 @Override
@@ -840,7 +842,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private void moveColumnsByX(final @NonNull List<BoardColumnContainerLayout> columns, int x,
                                 final @NonNull Runnable animationEndedListener) {
         ValueAnimator animator = ValueAnimator.ofInt(0, x);
-        animator.setDuration(MOVE_COLUMNS_ANIMATION_DURATION);
+        animator.setDuration(mMoveColumnsAnimationDuration);
         animator.setInterpolator(new AccelerateInterpolator(COLUMN_ACCELERATION_ANIMATION_FACTOR));
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             private int prevDelta = 0;
