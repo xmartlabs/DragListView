@@ -814,7 +814,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                 @Override
                 public void run() {
                     mColumnLayout.addView(containerLayout, position);
-                    containerLayout.animate()
+                    /*containerLayout.animate()
                             .alpha(ALPHA_OPAQUE)
                             .scaleX(VIEW_NORMAL_SCALE)
                             .scaleY(VIEW_NORMAL_SCALE)
@@ -829,7 +829,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                                     mTouchEnabled = true;
                                 }
                             })
-                            .start();
+                            .start();*/
                 }
             });
         }
