@@ -277,4 +277,8 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
 
         boolean isDragging();
     }
+
+    protected RecyclerView.ViewHolder findViewHolderForLayoutPosition(int layoutPosition){
+        return recyclerView.findViewHolderForLayoutPosition(layoutPosition);
+    }
 }
