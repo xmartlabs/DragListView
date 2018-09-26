@@ -62,6 +62,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     private static final int SCROLL_ANIMATION_DURATION = 325;
     private static final int SWAP_ANIMATION_DURATION = 700;
+    private static final int MOVE_COLUMNS_ANIMATION_DURATION = 300;
     private static final float ALPHA_OPAQUE = 1.0f;
     private static final float ALPHA_INVISIBLE = 0.01f;
     private static final float VIEW_SHRINK_SCALE = 0.8f;
@@ -763,8 +764,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                                                            final int position,
                                                            @Nullable final ItemAnimationListener animationListener,
                                                            final boolean animate) {
-        if (!animate) {
+        if (animate) {
             mMoveColumnsAnimationDuration = 0;
+        } else {
+            mMoveColumnsAnimationDuration = MOVE_COLUMNS_ANIMATION_DURATION;
         }
 
         final DragItemRecyclerView recyclerView = setupRecyclerView(adapter, hasFixedItemSize);
