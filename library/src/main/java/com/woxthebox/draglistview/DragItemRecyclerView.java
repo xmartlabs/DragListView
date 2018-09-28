@@ -20,7 +20,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
@@ -72,6 +71,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     private boolean mScrollingEnabled = true;
     private boolean mDisableReorderWhenDragging;
     private boolean mDragEnabled = true;
+    private boolean mIsDraggable = true;
 
     public DragItemRecyclerView(Context context) {
         super(context);
@@ -147,6 +147,10 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         mDragEnabled = enabled;
     }
 
+    boolean isDraggable() {
+        return mIsDraggable;
+    }
+
     boolean isDragEnabled() {
         return mDragEnabled;
     }
@@ -194,6 +198,10 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
 
     void setOuterParent(@NonNull BoardColumnContainerLayout outerParent) {
         mOuterParent = outerParent;
+    }
+
+    void setIsDraggable(boolean isDraggable) {
+        mIsDraggable = isDraggable;
     }
 
     BoardColumnContainerLayout getOuterParent() {
