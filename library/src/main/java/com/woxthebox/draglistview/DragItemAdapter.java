@@ -105,10 +105,13 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
 
     public Object removeItem(int pos) {
         if (mItemList != null && mItemList.size() > pos && pos >= 0) {
-            View viewToRemove = recyclerView.findViewHolderForAdapterPosition(pos).itemView;
+            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(pos);
             Object item = mItemList.remove(pos);
             notifyItemRemoved(pos);
-            animateHeight((View) viewToRemove.getParent(), viewToRemove.getMeasuredHeight());
+            if (viewHolder != null) {
+                View viewToRemove = viewHolder.itemView;
+                animateHeight((View) viewToRemove.getParent(), viewToRemove.getMeasuredHeight());
+            }
             return item;
         }
         return null;
@@ -278,7 +281,7 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
         boolean isDragging();
     }
 
-    protected RecyclerView.ViewHolder findViewHolderForLayoutPosition(int layoutPosition){
+    protected RecyclerView.ViewHolder findViewHolderForLayoutPosition(int layoutPosition) {
         return recyclerView.findViewHolderForLayoutPosition(layoutPosition);
     }
 }
