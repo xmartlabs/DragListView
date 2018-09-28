@@ -277,7 +277,12 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private void updateScrollPosition() {
         // Updated event to scrollview coordinates
         DragItemRecyclerView currentList = getCurrentRecyclerView(mTouchX + getScrollX(), 0);
-        handleColumnChange(currentList);
+        if (getColumnOfList(currentList) != getColumnCount() - 1) {
+            handleColumnChange(currentList);
+        }else{
+            currentList = (DragItemRecyclerView) getRecyclerView(mDragStartColumn);
+            handleColumnChange(currentList);
+        }
 
         // Updated event to list coordinates
         if (isDraggingColumn()) {
