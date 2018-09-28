@@ -108,7 +108,7 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
             RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(pos);
             Object item = mItemList.remove(pos);
             notifyItemRemoved(pos);
-            if(viewHolder != null){
+            if (viewHolder != null) {
                 View viewToRemove = viewHolder.itemView;
                 animateHeight((View) viewToRemove.getParent(), viewToRemove.getMeasuredHeight());
             }
@@ -281,7 +281,7 @@ public abstract class DragItemAdapter<T, VH extends DragItemAdapter.ViewHolder> 
         boolean isDragging();
     }
 
-    protected RecyclerView.ViewHolder findViewHolderForLayoutPosition(int layoutPosition){
+    protected RecyclerView.ViewHolder findViewHolderForLayoutPosition(int layoutPosition) {
         return recyclerView.findViewHolderForLayoutPosition(layoutPosition);
     }
 }
